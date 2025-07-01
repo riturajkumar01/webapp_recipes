@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecipeVault - Premium Recipe Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Premium recipe management app with advanced features">
+    <meta name="keywords" content="recipes, cooking, food, management, premium">
+</head>
+<body>
+    <!-- Particle Background -->
+    <div class="particles-container" id="particles"></div>
+    
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-utensils"></i>
+                <span>RecipeVault</span>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p>Loading your culinary universe...</p>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Navigation Header -->
+        <nav class="nav-header">
+            <div class="nav-content">
+                <div class="logo">
+                    <i class="fas fa-utensils"></i>
+                    <span class="logo-text">Recipe<span class="accent">Vault</span></span>
+                </div>
+                
+                <div class="nav-actions">
+                    <div class="search-container">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search recipes, ingredients, categories...">
+                            <div class="search-glow"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-controls">
+                        <select id="categoryFilter" class="filter-select" title="Change category">
+                            <option value="">All Categories</option>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
+                            <option value="dessert">Dessert</option>
+                            <option value="snack">Snack</option>
+                            <option value="beverage">Beverage</option>
+                            <option value="appetizer">Appetizer</option>
+                        </select>
+                        
+                        <select id="difficultyFilter" class="filter-select" title="Change difficulty">
+                            <option value="">All Levels</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Theme Toggle Button -->
+                    <button class="btn btn-secondary" id="themeToggleBtn" title="Toggle Night/Day Mode">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+
+                    <button class="btn btn-primary add-recipe-btn" id="addRecipeBtn" title="Create a new recipe">
+                        <i class="fas fa-plus"></i>
+                        <span>Create Recipe</span>
+                        <div class="btn-glow"></div>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Stats Dashboard -->
+        <div class="stats-dashboard">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-number" id="totalRecipes">0</span>
+                    <span class="stat-label">Total Recipes</span>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-number" id="avgRating">0.0</span>
+                    <span class="stat-label">Avg Rating</span>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-number" id="avgTime">0</span>
+                    <span class="stat-label">Avg Time (min)</span>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-number" id="totalCalories">0</span>
+                    <span class="stat-label">Total Calories</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Recipe Grid -->
+            <div class="recipes-section">
+                <div class="section-header">
+                    <h2>Your Recipe Collection</h2>
+                    <div class="view-controls">
+                        <button class="view-btn active" data-view="grid">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="recipes-grid" id="recipesGrid">
+                    <!-- Recipes will be dynamically inserted here -->
+                </div>
+                
+                <div class="no-recipes" id="noRecipes" style="display: none;">
+                    <div class="no-recipes-content">
+                        <div class="no-recipes-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h3>No Recipes Found</h3>
+                        <p>Start building your culinary collection by adding your first recipe!</p>
+                        <button class="btn btn-primary" id="addFirstRecipeBtn" title="Add your first recipe">
+                            <i class="fas fa-plus"></i>
+                            Add Your First Recipe
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Recipe Modal -->
+        <div class="modal-overlay" id="recipeModal">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Create New Recipe</h2>
+                    <button class="close-btn" id="closeModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form id="recipeForm" class="recipe-form">
+                    <div class="form-grid">
+                        <!-- Basic Information -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+                            
+                            <div class="form-group">
+                                <label for="recipeName">Recipe Name *</label>
+                                <input type="text" id="recipeName" required>
+                                <div class="input-glow"></div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="category">Category *</label>
+                                    <select id="category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="breakfast">Breakfast</option>
+                                        <option value="lunch">Lunch</option>
+                                        <option value="dinner">Dinner</option>
+                                        <option value="dessert">Dessert</option>
+                                        <option value="snack">Snack</option>
+                                        <option value="beverage">Beverage</option>
+                                        <option value="appetizer">Appetizer</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="difficulty">Difficulty *</label>
+                                    <select id="difficulty" required>
+                                        <option value="">Select Level</option>
+                                        <option value="easy">Easy</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="hard">Hard</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="description" rows="3" placeholder="Brief description of your recipe..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Recipe Details -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-clock"></i> Recipe Details</h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prepTime">Prep Time (min) *</label>
+                                    <input type="number" id="prepTime" min="1" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="cookTime">Cook Time (min) *</label>
+                                    <input type="number" id="cookTime" min="1" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="servings">Servings *</label>
+                                    <input type="number" id="servings" min="1" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="calories">Calories per serving</label>
+                                    <input type="number" id="calories" min="1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Upload -->
+                        <div class="form-section">
+                            <h3><i class="fas fa-image"></i> Recipe Image</h3>
+                            
+                            <div class="image-upload-container">
+                                <input type="file" id="recipeImage" accept="image/*" hidden>
+                                <div class="image-upload-area" id="imageUploadArea">
+                                    <div class="upload-content">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Click or drag an image here to upload</p>
+                                        <span>Max size: 2MB</span>
+                                    </div>
+                                </div>
+                                <div class="image-preview" id="imagePreview"></div>
+                            </div>
+                        </div>
+
+                        <!-- Ingredients -->
+                        <div class="form-section full-width">
+                            <h3><i class="fas fa-list"></i> Ingredients *</h3>
+                            <div class="ingredients-container">
+                                <div class="ingredient-input-container">
+                                    <input type="text" id="ingredientInput" placeholder="Add ingredient...">
+                                    <button type="button" class="btn btn-secondary" id="addIngredientBtn" title="Add ingredient"><i class="fas fa-plus"></i> Add</button>
+                                </div>
+                                <div class="ingredients-list" id="ingredientsList"></div>
+                            </div>
+                        </div>
+
+                        <!-- Instructions -->
+                        <div class="form-section full-width">
+                            <h3><i class="fas fa-clipboard-list"></i> Instructions *</h3>
+                            <div class="instructions-container">
+                                <div class="instruction-input-container">
+                                    <textarea id="instructionInput" rows="2" placeholder="Add instruction..."></textarea>
+                                    <button type="button" class="btn btn-secondary" id="addInstructionBtn" title="Add instruction"><i class="fas fa-plus"></i> Add</button>
+                                </div>
+                                <div class="instructions-list" id="instructionsList"></div>
+                            </div>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="form-section full-width">
+                            <h3><i class="fas fa-tags"></i> Tags</h3>
+                            <div class="tags-container">
+                                <div class="tag-input-container">
+                                    <input type="text" id="tagInput" placeholder="Add tag (e.g. vegan, spicy)...">
+                                    <button type="button" class="btn btn-secondary" id="addTagBtn" title="Add tag"><i class="fas fa-plus"></i> Add</button>
+                                </div>
+                                <div class="tags-list" id="tagsList"></div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-section full-width">
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="saveRecipeBtn" title="Save recipe"><i class="fas fa-save"></i> Save Recipe</button>
+                                <button type="button" class="btn btn-secondary" id="cancelBtn" title="Cancel"><i class="fas fa-times"></i> Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Recipe Detail Modal -->
+        <div class="modal-overlay" id="recipeDetailModal">
+            <div class="modal-container recipe-detail-container">
+                <div class="modal-header">
+                    <h2 id="detailTitle">Recipe Details</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" id="editRecipeBtn" title="Edit this recipe"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="close-btn" id="closeDetailModal" title="Close details"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="recipe-detail-content" id="recipeDetailContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/particles.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+      // Add first recipe button handler
+      document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('addFirstRecipeBtn');
+        if (btn) btn.onclick = () => window.recipeVault.openModal();
+      });
+
+      // Theme toggle logic
+      function setTheme(mode) {
+        if (mode === 'light') {
+          document.body.setAttribute('data-theme', 'light');
+          localStorage.setItem('theme', 'light');
+          document.getElementById('themeIcon').className = 'fas fa-sun';
+        } else {
+          document.body.setAttribute('data-theme', 'dark');
+          localStorage.setItem('theme', 'dark');
+          document.getElementById('themeIcon').className = 'fas fa-moon';
+        }
+      }
+      document.getElementById('themeToggleBtn').onclick = function() {
+        const current = document.body.getAttribute('data-theme') || 'dark';
+        setTheme(current === 'dark' ? 'light' : 'dark');
+      };
+      // On load, set theme from localStorage
+      document.addEventListener('DOMContentLoaded', function() {
+        setTheme(localStorage.getItem('theme') || 'dark');
+      });
+    </script>
+</body>
+</html>
